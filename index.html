@@ -1,12 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trello Clone</title>
     <link rel="stylesheet" href="css/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 </head>
+
 <body>
-    <h1>Hello world</h1>
+    <header class="bg-gray-700 shadow-md">
+        <div class="container mx-auto px-4 text-center py-2"> <span
+                class="text-xl font-bold text-white md:text-2xl">Trello Clone</span> </div>
+    </header>
+    <main>
+        <div id="board" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+            <div class="bg-gray-300 rounded-xl shadow py-6 px-4">
+                <div class="flex items-center justify-between w-full mb-4">
+                    <h2 class="font-semibold text-gray-800 text-xl">Column Title</h2>
+                    <button class="cursor-pointer">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 space-y-3">
+                    <div class="card"> card </div>
+                    <div class="card"> card </div>
+                    <div class="card"> card </div>
+                </div>
+            </div>
+            <div class="bg-gray-300 rounded-xl shadow py-6 px-4">
+                <div class="flex items-center justify-between w-full mb-4">
+                    <h2 class="font-semibold text-gray-800 text-xl">Column Title</h2>
+                    <button class="cursor-pointer">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 space-y-3">
+                    <div class="card"> card </div>
+                </div>
+            </div>
+            <div class="bg-gray-300 rounded-xl shadow py-6 px-4">
+                <div class="flex items-center justify-between w-full mb-4">
+                    <h2 class="font-semibold text-gray-800 text-xl">Column Title</h2>
+                    <button class="cursor-pointer">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 space-y-3">
+                    <div class="card"> card </div>
+                    <div class="card"> card </div>
+                    <div class="card"> card </div>
+                    <div class="card"> card </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
 </body>
+
 </html>
