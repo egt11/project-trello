@@ -98,6 +98,7 @@ board.addEventListener("click", (e) => {
 
   if(editButton){
     const taskId = Number(editButton.dataset.taskId);
+    editTask(taskId);
     return;
   }
 
@@ -118,6 +119,11 @@ function addNewTask(newTask, columnId) {
   renderColumns();
 }
 
-function editTask(){
-  
+function editTask(taskId){
+  const newTaskName = window.prompt('Enter new task name: ');
+  const item = tasks.find(task => task.id === taskId);
+  item.name = newTaskName;
+  const index = tasks.findIndex(task => task.id === taskId);
+  tasks.splice(index, 1, item);
+  renderColumns();
 }
