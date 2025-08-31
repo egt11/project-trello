@@ -1,12 +1,13 @@
 const board = document.getElementById("board");
 
 // styles
-const columnStyle = "column";
-const cardStyle = "card";
+const columnStyle = "bg-gray-300 rounded-xl shadow py-6 px-4 flex flex-col gap-4";
+const cardStyle = "bg-white rounded-lg shadow-md p-6 grid grid-cols-2";
 const columnNameStyle = "font-semibold text-gray-800 text-xl";
 const cardGridStyle = "grid grid-cols-1 gap-4";
 const addButtonStyle =
   "add bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-800 cursor-pointer";
+const actionButtonDivStyle = 'flex justify-end gap-2'
 
 const columns = [
   { id: 1, name: "backlogs" },
@@ -49,19 +50,21 @@ function renderColumns() {
 
       const taskName = document.createElement("span");
       taskName.textContent = task.name;
+      taskName.className = "break-words whitespace-normal";
 
       const actionButtonsDiv = document.createElement("div");
+      actionButtonsDiv.className = actionButtonDivStyle;
 
       const editButton = document.createElement("button");
       editButton.innerHTML =
-        "<i class='fa-regular fa-pen-to-square mx-2 cursor-pointer'></i>";
+        "<i class='fa-regular fa-pen-to-square cursor-pointer'></i>";
       editButton.dataset.taskId = task.id;
       editButton.dataset.action = "edit";
       editButton.classList.add("action");
 
       const deleteButton = document.createElement("button");
       deleteButton.innerHTML =
-        "<i class='fa-solid fa-trash mx-2 cursor-pointer'></i>";
+        "<i class='fa-solid fa-trash cursor-pointer'></i>";
       deleteButton.dataset.taskId = task.id;
       deleteButton.dataset.action = "delete";
       deleteButton.classList.add("action");
