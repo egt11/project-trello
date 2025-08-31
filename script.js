@@ -47,20 +47,24 @@ function renderColumns() {
       const taskCard = document.createElement("div");
       taskCard.className = cardStyle;
 
-      const taskName = document.createElement('span');
-      taskName.textContent = task.name
-      
-      const actionButtonsDiv = document.createElement('div');
+      const taskName = document.createElement("span");
+      taskName.textContent = task.name;
 
-      const editButton = document.createElement('button');
-      editButton.innerHTML = "<i class='fa-regular fa-pen-to-square mx-2 cursor-pointer'></i>";
+      const actionButtonsDiv = document.createElement("div");
+
+      const editButton = document.createElement("button");
+      editButton.innerHTML =
+        "<i class='fa-regular fa-pen-to-square mx-2 cursor-pointer'></i>";
       editButton.dataset.taskId = task.id;
-      editButton.classList.add('edit');
+      editButton.dataset.action = "edit";
+      editButton.classList.add("action");
 
-      const deleteButton = document.createElement('button');
-      deleteButton.innerHTML = "<i class='fa-solid fa-trash mx-2 cursor-pointer'></i>";
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML =
+        "<i class='fa-solid fa-trash mx-2 cursor-pointer'></i>";
       deleteButton.dataset.taskId = task.id;
-      deleteButton.classList.add('delete')
+      deleteButton.dataset.action = "delete";
+      deleteButton.classList.add("action");
 
       actionButtonsDiv.appendChild(editButton);
       actionButtonsDiv.appendChild(deleteButton);
@@ -86,8 +90,7 @@ renderColumns();
 
 board.addEventListener("click", (e) => {
   const addButton = e.target.closest(".add");
-  const editButton = e.target.closest(".edit");
-  const deleteButton = e.target.closest(".delete");
+  const actionButton = e.target.closest(".action");
   if (addButton) {
     const columnId = Number(addButton.dataset.colId);
     const newTask = window.prompt("Enter new task");
@@ -96,14 +99,13 @@ board.addEventListener("click", (e) => {
     return;
   }
 
-  if(editButton){
-    const taskId = Number(editButton.dataset.taskId);
-    editTask(taskId);
-    return;
-  }
+  if (actionButton) {
+    const taskId = Number(actionButton.dataset.taskId);
+    const action = actionButton.dataset.action;
 
-  if(deleteButton){
-    const taskId = Number(deleteButton.dataset.taskId);
+    if (action === "edit") editTask(taskId);
+    else if (action === "delete") deleteTask(taskId);
+
     return;
   }
 });
@@ -119,11 +121,20 @@ function addNewTask(newTask, columnId) {
   renderColumns();
 }
 
-function editTask(taskId){
-  const newTaskName = window.prompt('Enter new task name: ');
-  const item = tasks.find(task => task.id === taskId);
+function editTask(taskId) {
+  const newTaskName = window.prompt("Enter new task name: ");
+  if (!newTaskName) return;
+  const item = tasks.find((task) => task.id === taskId);
   item.name = newTaskName;
-  const index = tasks.findIndex(task => task.id === taskId);
+  const index = tasks.findIndex((task) => task.id === taskId);
   tasks.splice(index, 1, item);
   renderColumns();
+}
+
+function deleteTask(taskId) {
+  const index = tasks.findIndex((task) => task.id === taskId);
+  if (window.confirm("Are you sure you want to delete this task?")) {
+    tasks.splice(index, 1);
+    renderColumns();
+  } else return;
 }
