@@ -1,13 +1,15 @@
 const board = document.getElementById("board");
 
 // styles
-const columnStyle = "bg-gray-300 rounded-xl shadow py-6 px-4 flex flex-col gap-4";
+const columnStyle =
+  "bg-gray-300 rounded-xl shadow py-6 px-4 flex flex-col gap-4";
 const cardStyle = "bg-white rounded-lg shadow-md p-6 grid grid-cols-2";
 const columnNameStyle = "font-semibold text-gray-800 text-xl";
-const cardGridStyle = "grid grid-cols-1 gap-4";
+const cardGridStyle =
+  "grid grid-cols-1 gap-4 border-2 border-dashed border-gray-400 p-4 rounded-lg";
 const addButtonStyle =
   "add bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-800 cursor-pointer";
-const actionButtonDivStyle = 'flex justify-end gap-2'
+const actionButtonDivStyle = "flex justify-end gap-2";
 
 const columns = [
   { id: 1, name: "backlogs" },
@@ -15,6 +17,7 @@ const columns = [
   { id: 3, name: "done" },
 ];
 
+//hardcoded tasks
 const tasks = [
   { id: 1, name: "Practice javascript", columnId: 2 },
   { id: 2, name: "Clean the room", columnId: 1 },
@@ -30,23 +33,38 @@ function renderColumns() {
 
   columns.forEach((column) => {
     const columnDiv = document.createElement("div");
+    columnDiv.id = column.id;
     columnDiv.className = columnStyle;
 
     const columnName = document.createElement("p");
     columnName.className = columnNameStyle;
     columnName.textContent = column.name;
 
-    columnDiv.appendChild(columnName);
-
     const cardGrid = document.createElement("div");
     cardGrid.className = cardGridStyle;
+    cardGrid.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
 
+    cardGrid.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const taskId = e.dataTransfer.getData("text/plain");
+      const taskCard = tasks.find((task) => task.id === Number(taskId));
+      taskCard.columnId = column.id;
+      renderColumns();
+    });
+
+    columnDiv.appendChild(columnName);
     columnDiv.appendChild(cardGrid);
 
     const columnTasks = tasks.filter((task) => task.columnId === column.id);
     columnTasks.forEach((task) => {
       const taskCard = document.createElement("div");
       taskCard.className = cardStyle;
+      taskCard.draggable = "true";
+      taskCard.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", task.id);
+      });
 
       const taskName = document.createElement("span");
       taskName.textContent = task.name;
@@ -113,6 +131,7 @@ board.addEventListener("click", (e) => {
   }
 });
 
+// CRUD
 function addNewTask(newTask, columnId) {
   let id = 0;
   tasks.forEach((task) => {
