@@ -17,16 +17,7 @@ const columns = [
   { id: 3, name: "done" },
 ];
 
-//hardcoded tasks
-const tasks = [
-  { id: 1, name: "Practice javascript", columnId: 2 },
-  { id: 2, name: "Clean the room", columnId: 1 },
-  { id: 3, name: "Do homeworks", columnId: 1 },
-  { id: 4, name: "Take a bath", columnId: 3 },
-  { id: 5, name: "Go to school", columnId: 3 },
-  { id: 6, name: "Push code to GitHub", columnId: 1 },
-  { id: 7, name: "Listen to spotify", columnId: 2 },
-];
+const tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
 
 function renderColumns() {
   board.innerHTML = "";
@@ -51,6 +42,7 @@ function renderColumns() {
       const taskId = e.dataTransfer.getData("text/plain");
       const taskCard = tasks.find((task) => task.id === Number(taskId));
       taskCard.columnId = column.id;
+      localStorage.setItem('tasks', JSON.stringify(tasks))
       renderColumns();
     });
 
@@ -140,6 +132,7 @@ function addNewTask(newTask, columnId) {
   });
   id++;
   tasks.push({ id: id, name: newTask, columnId: columnId });
+  localStorage.setItem('tasks', JSON.stringify(tasks))
   renderColumns();
 }
 
@@ -150,6 +143,7 @@ function editTask(taskId) {
   item.name = newTaskName;
   const index = tasks.findIndex((task) => task.id === taskId);
   tasks.splice(index, 1, item);
+  localStorage.setItem('tasks', JSON.stringify(tasks))
   renderColumns();
 }
 
@@ -157,6 +151,7 @@ function deleteTask(taskId) {
   const index = tasks.findIndex((task) => task.id === taskId);
   if (window.confirm("Are you sure you want to delete this task?")) {
     tasks.splice(index, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks))
     renderColumns();
   } else return;
 }
