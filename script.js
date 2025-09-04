@@ -1,9 +1,17 @@
 const board = document.getElementById("board");
+const modal = document.getElementById("modal");
+const modalLabel = document.getElementById("modalLabel");
+const modalInput = document.getElementById("modalInput");
+const modalPrimaryButton = document.getElementById("modalButton");
+const btnCloseModal = document.getElementById("closeModal");
+
+btnCloseModal.addEventListener("click", () => modal.close());
 
 // styles
 const columnStyle =
   "bg-gray-300 rounded-xl shadow py-6 px-4 flex flex-col gap-4";
-const cardStyle = "bg-white rounded-lg shadow-md p-6 grid grid-cols-2 cursor-grab";
+const cardStyle =
+  "bg-white rounded-lg shadow-md p-6 grid grid-cols-2 cursor-grab";
 const columnNameStyle = "font-semibold text-gray-800 text-xl";
 const cardGridStyle =
   "grid grid-cols-1 gap-4 border-2 border-dashed border-gray-400 p-4 rounded-lg";
@@ -14,9 +22,9 @@ const clearButtonStyle =
 const actionButtonDivStyle = "flex justify-end gap-2";
 
 const columns = [
-  { id: 1, name: "backlogs" },
-  { id: 2, name: "in-progress" },
-  { id: 3, name: "done" },
+  { id: 1, name: "To-Do" },
+  { id: 2, name: "In-progress" },
+  { id: 3, name: "Done" },
 ];
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -114,11 +122,13 @@ board.addEventListener("click", (e) => {
   const actionButton = e.target.closest(".action");
   const clearButton = e.target.closest(".clear");
   if (addButton) {
-    const columnId = Number(addButton.dataset.colId);
-    const newTask = window.prompt("Enter new task");
-    if (!newTask) return;
-    addNewTask(newTask, columnId);
-    return;
+    // const columnId = Number(addButton.dataset.colId);
+    // const newTask = window.prompt("Enter new task");
+    // if (!newTask) return;
+    // addNewTask(newTask, columnId);
+    // return;
+
+    modal.showModal();
   }
 
   if (actionButton) {
@@ -176,3 +186,5 @@ function clearTasks(columnId) {
     renderColumns();
   } else return;
 }
+
+function openModal(label, button, action) {}

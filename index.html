@@ -19,6 +19,26 @@
             <!-- Insert columns -->
         </div>
     </main>
+    <dialog id="modal" class="fixed m-auto py-4 px-6 bg-white rounded-2xl shadow-xl">
+        <div class="flex flex-col gap-4">
+            <p id="modalLabel" class="text-lg font-semibold text-gray-800">Label</p>
+            <input type="text" id="modalInput"
+                class="rounded-lg border border-gray-300 px-3 py-2 text-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none transition" />
+            <div class="flex justify-end gap-2">
+                <button type="submit" id="modalButton"
+                    class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow hover:bg-blue-700 active:scale-95 transition">
+                    Submit
+                </button>
+                <button type="button" id="closeModal"
+                    class="rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-700 hover:bg-gray-300 active:scale-95 transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+
+
     <script src="script.js"></script>
 </body>
 
