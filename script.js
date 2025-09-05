@@ -11,7 +11,7 @@ btnCloseModal.addEventListener("click", () => modal.close());
 const columnStyle =
   "bg-gray-300 rounded-xl shadow py-6 px-4 flex flex-col gap-4";
 const cardStyle =
-  "bg-white rounded-lg shadow-md p-6 grid grid-cols-2 cursor-grab";
+  "card bg-white rounded-lg shadow-md p-6 grid grid-cols-2 cursor-grab";
 const columnNameStyle = "font-semibold text-gray-800 text-xl";
 const cardGridStyle =
   "grid grid-cols-1 gap-4 border-2 border-dashed border-gray-400 p-4 rounded-lg";
@@ -101,6 +101,7 @@ function renderColumns() {
     const btnAddTask = document.createElement("button");
     btnAddTask.textContent = "Add task";
     btnAddTask.dataset.colId = column.id;
+    btnAddTask.dataset.action = "add";
     btnAddTask.className = addButtonStyle;
 
     const btnClearTask = document.createElement("button");
@@ -121,21 +122,43 @@ board.addEventListener("click", (e) => {
   const addButton = e.target.closest(".add");
   const actionButton = e.target.closest(".action");
   const clearButton = e.target.closest(".clear");
+  let label = "";
+  let button = "";
+  let setDisable = false;
   if (addButton) {
-    // const columnId = Number(addButton.dataset.colId);
-    // const newTask = window.prompt("Enter new task");
-    // if (!newTask) return;
-    // addNewTask(newTask, columnId);
-    // return;
-
-    modal.showModal();
+    const columnId = Number(addButton.dataset.colId);
+    const operation = addButton.dataset.action;
+    const actions = {
+      id: columnId,
+      operation: operation,
+      setDisable: setDisable,
+    };
+    label = "Add a task";
+    button = "Add";
+    openModal(label, button, actions);
+    return;
   }
 
   if (actionButton) {
     const taskId = Number(actionButton.dataset.taskId);
-    const action = actionButton.dataset.action;
-    if (action === "edit") editTask(taskId);
-    else if (action === "delete") deleteTask(taskId);
+    const operation = actionButton.dataset.action;
+    const taskCard = actionButton.closest(".card");
+    const taskName = taskCard.querySelector("span").textContent;
+    modalInput.value = taskName;
+    if (operation === "edit") {
+      label = "Edit a task";
+      button = "Edit";
+    } else if (operation === "delete") {
+      label = "Are you sure you want to delete this task?";
+      button = "Delete";
+      setDisable = true;
+    }
+    const actions = {
+      id: taskId,
+      operation: operation,
+      setDisable: setDisable,
+    };
+    openModal(label, button, actions);
     return;
   }
 
@@ -144,6 +167,29 @@ board.addEventListener("click", (e) => {
     clearTasks(columnId);
     return;
   }
+});
+
+function openModal(label, button, actions) {
+  if (actions.setDisable) modalInput.disabled = true;
+  else modalInput.disabled = false;
+  modalLabel.textContent = label;
+  modalPrimaryButton.textContent = button;
+  modalPrimaryButton.dataset.action = actions.operation;
+  modalPrimaryButton.dataset.id = actions.id;
+  modal.showModal();
+}
+
+modalPrimaryButton.addEventListener("click", () => {
+  const operation = modalPrimaryButton.dataset.action;
+  const id = Number(modalPrimaryButton.dataset.id);
+  const input = modalInput.value.trim();
+  if (operation !== "delete" && !input) return;
+  if (operation === "add") addNewTask(input, id);
+  else if (operation === "edit") editTask(input, id);
+  else if (operation === "delete") deleteTask(id);
+  modalInput.value = "";
+  modal.close();
+  return;
 });
 
 // CRUD
@@ -159,11 +205,9 @@ function addNewTask(newTask, columnId) {
   renderColumns();
 }
 
-function editTask(taskId) {
-  const newTaskName = window.prompt("Enter new task name: ");
-  if (!newTaskName) return;
+function editTask(input, taskId) {
   const item = tasks.find((task) => task.id === taskId);
-  item.name = newTaskName;
+  item.name = input;
   const index = tasks.findIndex((task) => task.id === taskId);
   tasks.splice(index, 1, item);
   localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -172,11 +216,9 @@ function editTask(taskId) {
 
 function deleteTask(taskId) {
   const index = tasks.findIndex((task) => task.id === taskId);
-  if (window.confirm("Are you sure you want to delete this task?")) {
-    tasks.splice(index, 1);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    renderColumns();
-  } else return;
+  tasks.splice(index, 1);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderColumns();
 }
 
 function clearTasks(columnId) {
@@ -186,5 +228,3 @@ function clearTasks(columnId) {
     renderColumns();
   } else return;
 }
-
-function openModal(label, button, action) {}
