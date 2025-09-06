@@ -5,7 +5,10 @@ const modalInput = document.getElementById("modalInput");
 const modalPrimaryButton = document.getElementById("modalButton");
 const btnCloseModal = document.getElementById("closeModal");
 
-btnCloseModal.addEventListener("click", () => modal.close());
+btnCloseModal.addEventListener("click", () => {
+  modalInput.value = "";
+  modal.close();
+});
 
 // styles
 const columnStyle =
@@ -107,6 +110,7 @@ function renderColumns() {
     const btnClearTask = document.createElement("button");
     btnClearTask.textContent = "Clear all";
     btnClearTask.dataset.colId = column.id;
+    btnClearTask.dataset.action = "clear";
     btnClearTask.className = clearButtonStyle;
 
     columnDiv.appendChild(btnAddTask);
@@ -163,14 +167,25 @@ board.addEventListener("click", (e) => {
   }
 
   if (clearButton) {
+    label = "Clear all tasks";
+    button = "Clear";
     const columnId = Number(clearButton.dataset.colId);
-    clearTasks(columnId);
+    const operation = clearButton.dataset.action;
+    const actions = {
+      id: columnId,
+      operation: operation,
+    };
+    openModal(label, button, actions);
     return;
   }
 });
 
 function openModal(label, button, actions) {
-  if (actions.setDisable) modalInput.disabled = true;
+  if (actions.operation === "clear") modalInput.style.display = "none";
+  else modalInput.style.display = "block";
+
+  if (actions.setDisable && actions.operation === "delete")
+    modalInput.disabled = true;
   else modalInput.disabled = false;
   modalLabel.textContent = label;
   modalPrimaryButton.textContent = button;
@@ -182,11 +197,14 @@ function openModal(label, button, actions) {
 modalPrimaryButton.addEventListener("click", () => {
   const operation = modalPrimaryButton.dataset.action;
   const id = Number(modalPrimaryButton.dataset.id);
-  const input = modalInput.value.trim();
-  if (operation !== "delete" && !input) return;
+  let input = null;
+  if (operation !== "clear") input = modalInput.value.trim();
+  if (operation !== "clear" && !input) return;
+
   if (operation === "add") addNewTask(input, id);
   else if (operation === "edit") editTask(input, id);
   else if (operation === "delete") deleteTask(id);
+  else if (operation === "clear") clearTasks(id);
   modalInput.value = "";
   modal.close();
   return;
@@ -222,9 +240,7 @@ function deleteTask(taskId) {
 }
 
 function clearTasks(columnId) {
-  if (window.confirm("Are you sure you want to clear all tasks?")) {
-    tasks = tasks.filter((task) => task.columnId !== columnId);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    renderColumns();
-  } else return;
+  tasks = tasks.filter((task) => task.columnId !== columnId);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderColumns();
 }
