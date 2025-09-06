@@ -167,7 +167,7 @@ board.addEventListener("click", (e) => {
   }
 
   if (clearButton) {
-    label = "Clear all tasks";
+    label = "Are you sure you want to clear all tasks?";
     button = "Clear";
     const columnId = Number(clearButton.dataset.colId);
     const operation = clearButton.dataset.action;
@@ -194,6 +194,10 @@ function openModal(label, button, actions) {
   modal.showModal();
 }
 
+modalInput.addEventListener("keyup", (e) => {
+  if (e.key === "Enter") modalPrimaryButton.click();
+});
+
 modalPrimaryButton.addEventListener("click", () => {
   const operation = modalPrimaryButton.dataset.action;
   const id = Number(modalPrimaryButton.dataset.id);
@@ -210,7 +214,7 @@ modalPrimaryButton.addEventListener("click", () => {
   return;
 });
 
-// CRUD
+// CRUD functions
 function addNewTask(newTask, columnId) {
   let id = 0;
   tasks.forEach((task) => {
