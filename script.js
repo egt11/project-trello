@@ -24,12 +24,7 @@ const clearButtonStyle =
   "clear bg-slate-400 text-white font-semibold px-4 py-2 rounded hover:bg-slate-500 cursor-pointer";
 const actionButtonDivStyle = "flex justify-end gap-2";
 
-const columns = [
-  { id: 1, name: "To-Do" },
-  { id: 2, name: "In-progress" },
-  { id: 3, name: "Done" },
-];
-
+let columns = JSON.parse(localStorage.getItem("columns")) || [];
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 function renderColumns() {
@@ -118,23 +113,38 @@ function renderColumns() {
 
     board.appendChild(columnDiv);
   });
+  const btnAddColumn = document.createElement("button");
+  btnAddColumn.id = "btnAddColumn";
+  btnAddColumn.className =
+    "flex items-center justify-center h-full min-h-[150px] bg-gray-100 border-2 border-dashed border-gray-400 rounded-xl text-gray-600 font-medium hover:bg-gray-200 hover:border-gray-500 transition";
+  btnAddColumn.textContent = "+ Add Column";
+  btnAddColumn.addEventListener("click", () => {
+  label = "Add a New Column";
+  button = "Add";
+  const actions = { operation: "add", type: "column" };
+  openModal(label, button, actions);
+});
+
+  board.appendChild(btnAddColumn);
 }
 
 renderColumns();
 
+let label = "";
+let button = "";
+let setDisable = false;
 board.addEventListener("click", (e) => {
   const addButton = e.target.closest(".add");
   const actionButton = e.target.closest(".action");
   const clearButton = e.target.closest(".clear");
-  let label = "";
-  let button = "";
-  let setDisable = false;
+
   if (addButton) {
     const columnId = Number(addButton.dataset.colId);
     const operation = addButton.dataset.action;
     const actions = {
       id: columnId,
       operation: operation,
+      type: "task",
       setDisable: setDisable,
     };
     label = "Add a task";
@@ -191,6 +201,8 @@ function openModal(label, button, actions) {
   modalPrimaryButton.textContent = button;
   modalPrimaryButton.dataset.action = actions.operation;
   modalPrimaryButton.dataset.id = actions.id;
+  actions.type ? (modalPrimaryButton.dataset.type = actions.type) : null;
+
   modal.showModal();
 }
 
@@ -200,12 +212,14 @@ modalInput.addEventListener("keyup", (e) => {
 
 modalPrimaryButton.addEventListener("click", () => {
   const operation = modalPrimaryButton.dataset.action;
-  const id = Number(modalPrimaryButton.dataset.id);
+  const id = Number(modalPrimaryButton.dataset.id) || null;
+  const type = modalPrimaryButton.dataset.type || null;
   let input = null;
   if (operation !== "clear") input = modalInput.value.trim();
   if (operation !== "clear" && !input) return;
 
-  if (operation === "add") addNewTask(input, id);
+  if (operation === "add" && type === "column") addNewColumn(input);
+  else if (operation === "add" && type === "task") addNewTask(input, id);
   else if (operation === "edit") editTask(input, id);
   else if (operation === "delete") deleteTask(id);
   else if (operation === "clear") clearTasks(id);
@@ -246,5 +260,17 @@ function deleteTask(taskId) {
 function clearTasks(columnId) {
   tasks = tasks.filter((task) => task.columnId !== columnId);
   localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderColumns();
+}
+
+function addNewColumn(name) {
+  let id = 0;
+  columns.forEach((column) => {
+    const storedId = column.id;
+    if (id < storedId) id = storedId;
+  });
+  id++;
+  columns.push({ id: id, name: name });
+  localStorage.setItem("columns", JSON.stringify(columns));
   renderColumns();
 }
