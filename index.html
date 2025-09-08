@@ -6,20 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trello Clone</title>
     <link rel="stylesheet" href="css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
 </head>
 
 <body>
     <header class="bg-gray-700 shadow-md">
-        <div class="container mx-auto px-4 text-center py-2"> <span
-                class="text-xl font-bold text-white md:text-2xl">Trello Clone</span> </div>
-    </header>
-    <main class="grid grid-cols-1 gap-4 p-6">
-        <div id="board" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Insert columns -->
+        <div class="container mx-auto px-4 text-center py-2">
+            <span class="text-xl font-bold text-white md:text-2xl">Trello Clone</span>
         </div>
+    </header>
+    <main class="p-6">
+        <div id="board" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-start">
     </main>
-    <dialog id="modal" class="fixed m-auto py-4 px-6 bg-white rounded-2xl shadow-xl">
+    <dialog id="modal" class="fixed m-auto py-4 px-6 bg-white rounded-2xl shadow-xl backdrop:bg-gray-900/80">
         <div class="flex flex-col gap-4">
             <p id="modalLabel" class="text-lg font-semibold text-gray-800">Label</p>
             <input type="text" id="modalInput"
@@ -36,9 +35,6 @@
             </div>
         </div>
     </dialog>
-
-
-
     <script src="script.js"></script>
 </body>
 
