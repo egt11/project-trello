@@ -10,20 +10,6 @@ btnCloseModal.addEventListener("click", () => {
   modal.close();
 });
 
-// styles
-const columnStyle =
-  "bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200";
-const cardStyle =
-  "card bg-white rounded-xl shadow-lg p-5 grid grid-cols-[1fr_auto] items-center gap-4 transition-all duration-200 hover:shadow-xl hover:scale-[1.01] active:cursor-grabbing";
-const columnNameStyle = "font-bold text-gray-900 text-2xl tracking-tight";
-const cardGridStyle =
-  "grid grid-cols-1 gap-4 border-2 border-dashed border-gray-300 p-4 rounded-xl";
-const addButtonStyle =
-  "add w-full bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors duration-200";
-const clearButtonStyle =
-  "clear w-full bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200";
-const actionButtonDivStyle = "flex justify-end gap-4";
-
 let columns = JSON.parse(localStorage.getItem("columns")) || [];
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 const starterColumns = [
@@ -89,14 +75,37 @@ function renderColumns() {
     columns.forEach((column) => {
       const columnDiv = document.createElement("div");
       columnDiv.id = column.id;
-      columnDiv.className = columnStyle;
+      columnDiv.className =
+        "bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200";
 
-      const columnName = document.createElement("p");
-      columnName.className = columnNameStyle;
+      const columnHeader = document.createElement("div");
+      columnHeader.className = "flex justify-between";
+
+      const columnTitleDiv = document.createElement("div");
+      columnTitleDiv.className = "flex items-center gap-3";
+
+      const columnName = document.createElement("span");
+      columnName.className = "font-bold text-gray-900 text-2xl tracking-tight";
       columnName.textContent = column.name;
 
+      const btnEditColumn = document.createElement("button");
+      btnEditColumn.innerHTML = "<i class = 'ri-edit-box-line cursor-pointer'></i>";
+      btnEditColumn.dataset.colId = column.id;
+
+      columnTitleDiv.appendChild(columnName);
+      columnTitleDiv.appendChild(btnEditColumn);
+
+      const btnDeleteColumn = document.createElement("button");
+      btnDeleteColumn.innerHTML =
+        "<i class = 'ri-delete-bin-6-line cursor-pointer'></i>";
+      btnDeleteColumn.dataset.colId = column.id;
+
+      columnHeader.appendChild(columnTitleDiv);
+      columnHeader.appendChild(btnDeleteColumn);
+
       const cardGrid = document.createElement("div");
-      cardGrid.className = cardGridStyle;
+      cardGrid.className =
+        "grid grid-cols-1 gap-4 border-2 border-dashed border-gray-300 p-4 rounded-xl";
       cardGrid.addEventListener("dragover", (e) => {
         e.preventDefault();
       });
@@ -110,13 +119,14 @@ function renderColumns() {
         renderColumns();
       });
 
-      columnDiv.appendChild(columnName);
+      columnDiv.appendChild(columnHeader);
       columnDiv.appendChild(cardGrid);
 
       const columnTasks = tasks.filter((task) => task.columnId === column.id);
       columnTasks.forEach((task) => {
         const taskCard = document.createElement("div");
-        taskCard.className = cardStyle;
+        taskCard.className =
+          "card bg-white rounded-xl shadow-lg p-5 grid grid-cols-[1fr_auto] items-center gap-4 transition-all duration-200 hover:shadow-xl hover:scale-[1.01] active:cursor-grabbing";
         taskCard.draggable = "true";
         taskCard.addEventListener("dragstart", (e) => {
           e.dataTransfer.setData("text/plain", task.id);
@@ -127,11 +137,10 @@ function renderColumns() {
         taskName.className = "break-words whitespace-normal";
 
         const actionButtonsDiv = document.createElement("div");
-        actionButtonsDiv.className = actionButtonDivStyle;
+        actionButtonsDiv.className = "flex justify-end gap-4";
 
         const editButton = document.createElement("button");
-        editButton.innerHTML =
-          "<i class='ri-edit-line cursor-pointer'></i>";
+        editButton.innerHTML = "<i class='ri-edit-line cursor-pointer'></i>";
         editButton.dataset.taskId = task.id;
         editButton.dataset.action = "edit";
         editButton.classList.add("action");
@@ -153,19 +162,23 @@ function renderColumns() {
       });
 
       const btnAddTask = document.createElement("button");
-      btnAddTask.textContent = "Add task";
+      btnAddTask.textContent = "+ Add task";
       btnAddTask.dataset.colId = column.id;
       btnAddTask.dataset.action = "add";
-      btnAddTask.className = addButtonStyle;
-
-      const btnClearTask = document.createElement("button");
-      btnClearTask.textContent = "Clear all";
-      btnClearTask.dataset.colId = column.id;
-      btnClearTask.dataset.action = "clear";
-      btnClearTask.className = clearButtonStyle;
+      btnAddTask.className =
+        "add w-full bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors duration-200";
 
       columnDiv.appendChild(btnAddTask);
-      if (columnTasks.length > 0) columnDiv.appendChild(btnClearTask);
+
+      if (columnTasks.length > 0) {
+        const btnClearTask = document.createElement("button");
+        btnClearTask.textContent = "Clear all";
+        btnClearTask.dataset.colId = column.id;
+        btnClearTask.dataset.action = "clear";
+        btnClearTask.className =
+          "clear w-full bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200";
+        columnDiv.appendChild(btnClearTask);
+      }
 
       board.appendChild(columnDiv);
     });
@@ -193,13 +206,13 @@ let label = "";
 let button = "";
 let setDisable = false;
 board.addEventListener("click", (e) => {
-  const addButton = e.target.closest(".add");
-  const actionButton = e.target.closest(".action");
+  const addTaskButton = e.target.closest(".add");
+  const taskActionButton = e.target.closest(".action");
   const clearButton = e.target.closest(".clear");
 
-  if (addButton) {
-    const columnId = Number(addButton.dataset.colId);
-    const operation = addButton.dataset.action;
+  if (addTaskButton) {
+    const columnId = Number(addTaskButton.dataset.colId);
+    const operation = addTaskButton.dataset.action;
     const actions = {
       id: columnId,
       operation: operation,
@@ -212,10 +225,10 @@ board.addEventListener("click", (e) => {
     return;
   }
 
-  if (actionButton) {
-    const taskId = Number(actionButton.dataset.taskId);
-    const operation = actionButton.dataset.action;
-    const taskCard = actionButton.closest(".card");
+  if (taskActionButton) {
+    const taskId = Number(taskActionButton.dataset.taskId);
+    const operation = taskActionButton.dataset.action;
+    const taskCard = taskActionButton.closest(".card");
     const taskName = taskCard.querySelector("span").textContent;
     modalInput.value = taskName;
     if (operation === "edit") {
