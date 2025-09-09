@@ -76,7 +76,7 @@ function renderColumns() {
       const columnDiv = document.createElement("div");
       columnDiv.id = column.id;
       columnDiv.className =
-        "bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200";
+        "column bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200";
 
       const columnHeader = document.createElement("div");
       columnHeader.className = "flex justify-between";
@@ -85,12 +85,17 @@ function renderColumns() {
       columnTitleDiv.className = "flex items-center gap-3";
 
       const columnName = document.createElement("span");
-      columnName.className = "font-bold text-gray-900 text-2xl tracking-tight";
+      columnName.className =
+        "column-name font-bold text-gray-900 text-2xl tracking-tight";
       columnName.textContent = column.name;
 
       const btnEditColumn = document.createElement("button");
-      btnEditColumn.innerHTML = "<i class = 'ri-edit-box-line cursor-pointer'></i>";
+      btnEditColumn.innerHTML =
+        "<i class = 'ri-edit-box-line cursor-pointer'></i>";
       btnEditColumn.dataset.colId = column.id;
+      btnEditColumn.dataset.action = "edit";
+      btnEditColumn.dataset.columnName = column.name;
+      btnEditColumn.classList.add("column-action");
 
       columnTitleDiv.appendChild(columnName);
       columnTitleDiv.appendChild(btnEditColumn);
@@ -99,6 +104,9 @@ function renderColumns() {
       btnDeleteColumn.innerHTML =
         "<i class = 'ri-delete-bin-6-line cursor-pointer'></i>";
       btnDeleteColumn.dataset.colId = column.id;
+      btnDeleteColumn.dataset.action = "delete";
+      btnDeleteColumn.dataset.columnName = column.name;
+      btnDeleteColumn.classList.add("column-action");
 
       columnHeader.appendChild(columnTitleDiv);
       columnHeader.appendChild(btnDeleteColumn);
@@ -122,6 +130,7 @@ function renderColumns() {
       columnDiv.appendChild(columnHeader);
       columnDiv.appendChild(cardGrid);
 
+      //tasks
       const columnTasks = tasks.filter((task) => task.columnId === column.id);
       columnTasks.forEach((task) => {
         const taskCard = document.createElement("div");
@@ -134,7 +143,7 @@ function renderColumns() {
 
         const taskName = document.createElement("span");
         taskName.textContent = task.name;
-        taskName.className = "break-words whitespace-normal";
+        taskName.className = "task-name break-words whitespace-normal";
 
         const actionButtonsDiv = document.createElement("div");
         actionButtonsDiv.className = "flex justify-end gap-4";
@@ -143,14 +152,16 @@ function renderColumns() {
         editButton.innerHTML = "<i class='ri-edit-line cursor-pointer'></i>";
         editButton.dataset.taskId = task.id;
         editButton.dataset.action = "edit";
-        editButton.classList.add("action");
+        editButton.dataset.taskName = task.name;
+        editButton.classList.add("task-action");
 
         const deleteButton = document.createElement("button");
         deleteButton.innerHTML =
           "<i class='ri-delete-bin-fill cursor-pointer'></i>";
         deleteButton.dataset.taskId = task.id;
         deleteButton.dataset.action = "delete";
-        deleteButton.classList.add("action");
+        deleteButton.dataset.taskName = task.name;
+        deleteButton.classList.add("task-action");
 
         actionButtonsDiv.appendChild(editButton);
         actionButtonsDiv.appendChild(deleteButton);
@@ -207,7 +218,8 @@ let button = "";
 let setDisable = false;
 board.addEventListener("click", (e) => {
   const addTaskButton = e.target.closest(".add");
-  const taskActionButton = e.target.closest(".action");
+  const taskActionButton = e.target.closest(".task-action");
+  const columnActionButton = e.target.closest(".column-action");
   const clearButton = e.target.closest(".clear");
 
   if (addTaskButton) {
@@ -228,8 +240,8 @@ board.addEventListener("click", (e) => {
   if (taskActionButton) {
     const taskId = Number(taskActionButton.dataset.taskId);
     const operation = taskActionButton.dataset.action;
-    const taskCard = taskActionButton.closest(".card");
-    const taskName = taskCard.querySelector("span").textContent;
+    const taskName = taskActionButton.dataset.taskName;
+
     modalInput.value = taskName;
     if (operation === "edit") {
       label = "Edit a task";
@@ -242,6 +254,7 @@ board.addEventListener("click", (e) => {
     const actions = {
       id: taskId,
       operation: operation,
+      type: "task",
       setDisable: setDisable,
     };
     openModal(label, button, actions);
@@ -256,6 +269,30 @@ board.addEventListener("click", (e) => {
     const actions = {
       id: columnId,
       operation: operation,
+      type: "task",
+    };
+    openModal(label, button, actions);
+    return;
+  }
+
+  if (columnActionButton) {
+    const columnId = Number(columnActionButton.dataset.colId);
+    const operation = columnActionButton.dataset.action;
+    const columnName = columnActionButton.dataset.columnName;
+    modalInput.value = columnName;
+    if (operation === "edit") {
+      label = "Edit Column Name";
+      button = "Edit";
+    } else if (operation === "delete") {
+      label = "Are you sure you want to delete this column?";
+      button = "Delete";
+      setDisable = true;
+    }
+    const actions = {
+      id: columnId,
+      operation: operation,
+      type: "column",
+      setDisable: setDisable,
     };
     openModal(label, button, actions);
     return;
@@ -290,17 +327,26 @@ modalPrimaryButton.addEventListener("click", () => {
   if (operation !== "clear") input = modalInput.value.trim();
   if (operation !== "clear" && !input) return;
 
-  if (operation === "add" && type === "column") addNewColumn(input);
-  else if (operation === "add" && type === "task") addNewTask(input, id);
-  else if (operation === "edit") editTask(input, id);
-  else if (operation === "delete") deleteTask(id);
-  else if (operation === "clear") clearTasks(id);
+  //columns
+  if (type === "column") {
+    if (operation === "add") addNewColumn(input);
+    else if (operation === "edit") editColumn(input, id);
+    else if (operation === "delete") deleteColumn(id);
+  }
+
+  //tasks
+  if (type === "task") {
+    if (operation === "add") addNewTask(input, id);
+    else if (operation === "edit") editTask(input, id);
+    else if (operation === "delete") deleteTask(id);
+    else if (operation === "clear") clearTasks(id);
+  }
   modalInput.value = "";
   modal.close();
   return;
 });
 
-// CRUD functions
+// task CRUD functions
 function addNewTask(newTask, columnId) {
   let id = 0;
   tasks.forEach((task) => {
@@ -335,6 +381,7 @@ function clearTasks(columnId) {
   renderColumns();
 }
 
+// column CRUD functions
 function addNewColumn(name) {
   let id = 0;
   columns.forEach((column) => {
@@ -344,5 +391,24 @@ function addNewColumn(name) {
   id++;
   columns.push({ id: id, name: name });
   localStorage.setItem("columns", JSON.stringify(columns));
+  renderColumns();
+}
+
+function editColumn(input, columnId) {
+  const item = columns.find((column) => column.id === columnId);
+  item.name = input;
+  const index = columns.findIndex((column) => column.id === columnId);
+  columns.splice(index, 1, item);
+  localStorage.setItem("columns", JSON.stringify(columns));
+  renderColumns();
+}
+
+function deleteColumn(columnId) {
+  tasks = tasks.filter(task => task.columnId !== columnId)
+  console.log(tasks)
+  const index = columns.findIndex((column) => column.id === columnId);
+  columns.splice(index, 1);
+  localStorage.setItem("columns", JSON.stringify(columns));
+  localStorage.setItem("tasks", JSON.stringify(tasks));
   renderColumns();
 }
