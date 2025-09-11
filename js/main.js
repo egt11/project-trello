@@ -1,24 +1,15 @@
-const board = document.getElementById("board");
-const modal = document.getElementById("modal");
-const modalLabel = document.getElementById("modalLabel");
-const modalInput = document.getElementById("modalInput");
-const modalPrimaryButton = document.getElementById("modalButton");
-const btnCloseModal = document.getElementById("closeModal");
+import {
+  getColumns,
+  getTasks,
+  setColumns,
+  setTasks,
+  starterColumns,
+} from "./data.js";
+import { openModal } from "./modal.js";
 
-btnCloseModal.addEventListener("click", () => {
-  modalInput.value = "";
-  modal.close();
-});
-
-let columns = JSON.parse(localStorage.getItem("columns")) || [];
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-const starterColumns = [
-  { id: 1, name: "To-Do" },
-  { id: 2, name: "In-Progress" },
-  { id: 3, name: "Done" },
-];
-
-function renderColumns() {
+export default function renderColumns() {
+  const columns = getColumns();
+  const tasks = getTasks();
   board.innerHTML = "";
 
   if (columns.length < 1) {
@@ -45,9 +36,7 @@ function renderColumns() {
     btnAddDefaultColumns.textContent =
       "Add Starter Columns (To-Do, In-Progress, Done)";
     btnAddDefaultColumns.addEventListener("click", () => {
-      columns = [...starterColumns];
-      localStorage.setItem("columns", JSON.stringify(columns));
-      renderColumns();
+      setColumns(starterColumns);
     });
 
     // Secondary Button: Add a single column manually
@@ -123,8 +112,7 @@ function renderColumns() {
         const taskId = e.dataTransfer.getData("text/plain");
         const taskCard = tasks.find((task) => task.id === Number(taskId));
         taskCard.columnId = column.id;
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        renderColumns();
+        setTasks(tasks);
       });
 
       columnDiv.appendChild(columnHeader);
@@ -212,203 +200,3 @@ function renderColumns() {
 }
 
 renderColumns();
-
-let label = "";
-let button = "";
-let setDisable = false;
-board.addEventListener("click", (e) => {
-  const addTaskButton = e.target.closest(".add");
-  const taskActionButton = e.target.closest(".task-action");
-  const columnActionButton = e.target.closest(".column-action");
-  const clearButton = e.target.closest(".clear");
-
-  if (addTaskButton) {
-    const columnId = Number(addTaskButton.dataset.colId);
-    const operation = addTaskButton.dataset.action;
-    const actions = {
-      id: columnId,
-      operation: operation,
-      type: "task",
-      setDisable: setDisable,
-    };
-    label = "Add a task";
-    button = "Add";
-    openModal(label, button, actions);
-    return;
-  }
-
-  if (taskActionButton) {
-    const taskId = Number(taskActionButton.dataset.taskId);
-    const operation = taskActionButton.dataset.action;
-    const taskName = taskActionButton.dataset.taskName;
-
-    modalInput.value = taskName;
-    if (operation === "edit") {
-      label = "Edit a task";
-      button = "Edit";
-    } else if (operation === "delete") {
-      label = "Are you sure you want to delete this task?";
-      button = "Delete";
-      setDisable = true;
-    }
-    const actions = {
-      id: taskId,
-      operation: operation,
-      type: "task",
-      setDisable: setDisable,
-    };
-    openModal(label, button, actions);
-    return;
-  }
-
-  if (clearButton) {
-    label = "Are you sure you want to clear all tasks?";
-    button = "Clear";
-    const columnId = Number(clearButton.dataset.colId);
-    const operation = clearButton.dataset.action;
-    const actions = {
-      id: columnId,
-      operation: operation,
-      type: "task",
-    };
-    openModal(label, button, actions);
-    return;
-  }
-
-  if (columnActionButton) {
-    const columnId = Number(columnActionButton.dataset.colId);
-    const operation = columnActionButton.dataset.action;
-    const columnName = columnActionButton.dataset.columnName;
-    modalInput.value = columnName;
-    if (operation === "edit") {
-      label = "Edit Column Name";
-      button = "Edit";
-    } else if (operation === "delete") {
-      label = "Are you sure you want to delete this column?";
-      button = "Delete";
-      setDisable = true;
-    }
-    const actions = {
-      id: columnId,
-      operation: operation,
-      type: "column",
-      setDisable: setDisable,
-    };
-    openModal(label, button, actions);
-    return;
-  }
-});
-
-function openModal(label, button, actions) {
-  if (actions.operation === "clear") modalInput.style.display = "none";
-  else modalInput.style.display = "block";
-
-  if (actions.setDisable && actions.operation === "delete")
-    modalInput.disabled = true;
-  else modalInput.disabled = false;
-  modalLabel.textContent = label;
-  modalPrimaryButton.textContent = button;
-  modalPrimaryButton.dataset.action = actions.operation;
-  modalPrimaryButton.dataset.id = actions.id;
-  actions.type ? (modalPrimaryButton.dataset.type = actions.type) : null;
-
-  modal.showModal();
-}
-
-modalInput.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") modalPrimaryButton.click();
-});
-
-modalPrimaryButton.addEventListener("click", () => {
-  const operation = modalPrimaryButton.dataset.action;
-  const id = Number(modalPrimaryButton.dataset.id) || null;
-  const type = modalPrimaryButton.dataset.type || null;
-  let input = null;
-  if (operation !== "clear") input = modalInput.value.trim();
-  if (operation !== "clear" && !input) return;
-
-  //columns
-  if (type === "column") {
-    if (operation === "add") addNewColumn(input);
-    else if (operation === "edit") editColumn(input, id);
-    else if (operation === "delete") deleteColumn(id);
-  }
-
-  //tasks
-  if (type === "task") {
-    if (operation === "add") addNewTask(input, id);
-    else if (operation === "edit") editTask(input, id);
-    else if (operation === "delete") deleteTask(id);
-    else if (operation === "clear") clearTasks(id);
-  }
-  modalInput.value = "";
-  modal.close();
-  return;
-});
-
-// task CRUD functions
-function addNewTask(newTask, columnId) {
-  let id = 0;
-  tasks.forEach((task) => {
-    const storedId = task.id;
-    if (id < storedId) id = storedId;
-  });
-  id++;
-  tasks.push({ id: id, name: newTask, columnId: columnId });
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderColumns();
-}
-
-function editTask(input, taskId) {
-  const item = tasks.find((task) => task.id === taskId);
-  item.name = input;
-  const index = tasks.findIndex((task) => task.id === taskId);
-  tasks.splice(index, 1, item);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderColumns();
-}
-
-function deleteTask(taskId) {
-  const index = tasks.findIndex((task) => task.id === taskId);
-  tasks.splice(index, 1);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderColumns();
-}
-
-function clearTasks(columnId) {
-  tasks = tasks.filter((task) => task.columnId !== columnId);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderColumns();
-}
-
-// column CRUD functions
-function addNewColumn(name) {
-  let id = 0;
-  columns.forEach((column) => {
-    const storedId = column.id;
-    if (id < storedId) id = storedId;
-  });
-  id++;
-  columns.push({ id: id, name: name });
-  localStorage.setItem("columns", JSON.stringify(columns));
-  renderColumns();
-}
-
-function editColumn(input, columnId) {
-  const item = columns.find((column) => column.id === columnId);
-  item.name = input;
-  const index = columns.findIndex((column) => column.id === columnId);
-  columns.splice(index, 1, item);
-  localStorage.setItem("columns", JSON.stringify(columns));
-  renderColumns();
-}
-
-function deleteColumn(columnId) {
-  tasks = tasks.filter(task => task.columnId !== columnId)
-  console.log(tasks)
-  const index = columns.findIndex((column) => column.id === columnId);
-  columns.splice(index, 1);
-  localStorage.setItem("columns", JSON.stringify(columns));
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderColumns();
-}
