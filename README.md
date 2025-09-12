@@ -1,6 +1,12 @@
-# project-trello
+# Trello Clone
 
-- i asked my coding mentor (chatgpt😂🤖) to give me a project i can do to practice javascript
-- mentor said, "aight bet go make a trello clone" (he didn't really say that but u get the point)
+## Overview
+A simple Trello-like board built with **vanilla JavaScript** for learning and practice.
 
-**GOAL:** practice javascript so i can learn reactjs
+**Live Demo:** [Visit the site here. Hosted using GitHub Pages](https://egt11.github.io/project-trello/)
+
+## Key Learnings
+- Implemented **drag-and-drop** using events like `dragstart`, `dragover`, and `drop`
+- Applied **event delegation** for cleaner event handling
+- Practiced **data-driven rendering** (UI reflects the state of arrays/objects)
+- Used **localStorage for client-side persistence** to save data across page reloads
