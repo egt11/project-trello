@@ -65,7 +65,7 @@ export default function renderColumns() {
       const columnDiv = document.createElement("div");
       columnDiv.id = column.id;
       columnDiv.className =
-        "column bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200";
+        "bg-gray-100 rounded-2xl p-6 shadow-xl flex flex-col gap-6 ring-1 ring-gray-200 w-full";
 
       const columnHeader = document.createElement("div");
       columnHeader.className = "flex justify-between";
@@ -75,7 +75,7 @@ export default function renderColumns() {
 
       const columnName = document.createElement("span");
       columnName.className =
-        "column-name font-bold text-gray-900 text-2xl tracking-tight";
+        "font-bold text-gray-900 text-2xl tracking-tight";
       columnName.textContent = column.name;
 
       const btnEditColumn = document.createElement("button");
@@ -123,7 +123,7 @@ export default function renderColumns() {
       columnTasks.forEach((task) => {
         const taskCard = document.createElement("div");
         taskCard.className =
-          "card bg-white rounded-xl shadow-lg p-5 grid grid-cols-[1fr_auto] items-center gap-4 transition-all duration-200 hover:shadow-xl hover:scale-[1.01] active:cursor-grabbing";
+          "bg-white rounded-xl shadow-lg p-5 grid grid-cols-[1fr_auto] items-center gap-4 transition-all duration-200 hover:shadow-xl hover:scale-[1.01] active:cursor-grabbing";
         taskCard.draggable = "true";
         taskCard.addEventListener("dragstart", (e) => {
           e.dataTransfer.setData("text/plain", task.id);
