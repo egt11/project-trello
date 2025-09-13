@@ -18,13 +18,13 @@ export function getTasks() {
 }
 
 export function setColumns(newColumns) {
-  columns = newColumns;
+  columns = [...newColumns];
   localStorage.setItem("columns", JSON.stringify(columns));
   renderColumns();
 }
 
 export function setTasks(newTasks) {
-  tasks = newTasks;
+  tasks = [...newTasks];
   localStorage.setItem("tasks", JSON.stringify(tasks));
   renderColumns();
 }

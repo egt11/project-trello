@@ -6,6 +6,7 @@ import {
   starterColumns,
 } from "./data.js";
 import { openModal } from "./modal.js";
+import { addColumn } from "./crud_functions.js";
 
 export default function renderColumns() {
   const columns = getColumns();
@@ -36,7 +37,7 @@ export default function renderColumns() {
     btnAddDefaultColumns.textContent =
       "Add Starter Columns (To-Do, In-Progress, Done)";
     btnAddDefaultColumns.addEventListener("click", () => {
-      setColumns(starterColumns);
+      starterColumns.forEach(cols => addColumn(cols.name))
     });
 
     // Secondary Button: Add a single column manually

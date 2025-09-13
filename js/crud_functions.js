@@ -58,9 +58,10 @@ export function editColumn(input, columnId) {
 }
 
 export function deleteColumn(columnId) {
-  const tasks = getTasks().filter((task) => task.columnId !== columnId);
+  const tasks = getTasks();
+  const filteredTasks = tasks.filter((task) => task.columnId !== columnId);
   const index = getColumns().findIndex((column) => column.id === columnId);
   columns.splice(index, 1);
   setColumns(columns);
-  setTasks(tasks);
+  setTasks(filteredTasks);
 }
