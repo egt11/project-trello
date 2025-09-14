@@ -2,33 +2,36 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trello Clone</title>
-    <link rel="stylesheet" href="css/output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="css/output.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" />
 </head>
 
-<body>
-    <header class="bg-slate-800 shadow-md">
+<body class="bg-slate-900">
+    <!-- Header -->
+    <header class="bg-slate-800 shadow-md border-b border-slate-700">
         <div class="container mx-auto px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight text-center md:text-left">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight text-center md:text-left">
                 Trello Clone
             </h1>
 
             <div class="flex gap-3 flex-col sm:flex-row justify-center md:justify-end">
                 <button id="btnClearAllTasks"
-                    class="hidden px-4 py-2 rounded-xl bg-red-600 text-white font-medium shadow-sm hover:bg-red-700 hover:shadow-md transition">
+                    class="hidden px-4 py-2 rounded-xl bg-rose-700 text-slate-100 font-medium shadow-sm hover:bg-rose-600 hover:shadow-md transition">
                     Clear All Tasks
                 </button>
+
                 <button id="btnDeleteAllColumns"
-                    class="hidden px-4 py-2 rounded-xl bg-rose-600 text-white font-medium shadow-sm hover:bg-rose-700 hover:shadow-md transition">
+                    class="hidden px-4 py-2 rounded-xl bg-rose-700 text-slate-100 font-medium shadow-sm hover:bg-rose-600 hover:shadow-md transition">
                     Delete All Columns
                 </button>
             </div>
         </div>
     </header>
 
+    <!-- Main -->
     <main class="p-6">
         <div class="container mx-auto md:px-4 lg:px-8">
             <div id="board"
@@ -36,23 +39,30 @@
             </div>
         </div>
     </main>
-    <dialog id="modal" class="fixed m-auto py-4 px-6 bg-white rounded-2xl shadow-xl backdrop:bg-gray-900/80">
+
+    <!-- Modal -->
+    <dialog id="modal" class="fixed m-auto py-4 px-6 bg-slate-800 rounded-2xl shadow-xl backdrop:bg-slate-900/90 border border-slate-700">
         <div class="flex flex-col gap-4">
-            <p id="modalLabel" class="text-lg font-semibold text-gray-800">Label</p>
+            <p id="modalLabel" class="text-lg font-semibold text-slate-100">Label</p>
+
             <input type="text" id="modalInput"
-                class="rounded-lg border border-gray-300 px-3 py-2 text-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none transition" />
+                class="rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-slate-100 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500/30 focus:outline-none transition placeholder:text-slate-400" />
+
             <div class="flex justify-end gap-2">
                 <button type="submit" id="modalButton"
-                    class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow hover:bg-blue-700 active:scale-95 transition">
+                    class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-slate-100 shadow hover:bg-indigo-500 active:scale-95 transition">
                     Submit
                 </button>
+
                 <button type="button" id="closeModal"
-                    class="rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-700 hover:bg-gray-300 active:scale-95 transition">
+                    class="rounded-lg bg-slate-700 px-4 py-2 font-medium text-slate-300 hover:bg-slate-600 active:scale-95 transition">
                     Cancel
                 </button>
             </div>
         </div>
     </dialog>
+
+    <!-- Scripts -->
     <script type="module" src="./js/main.js"></script>
     <script type="module" src="./js/data.js"></script>
     <script type="module" src="./js/board.js"></script>
