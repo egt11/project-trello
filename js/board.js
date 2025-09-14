@@ -3,7 +3,6 @@ import { openModal } from "./modal.js";
 const board = document.getElementById("board");
 
 let label = "";
-let button = "";
 let setDisable = false;
 board.addEventListener("click", (e) => {
   const addTaskButton = e.target.closest(".add");
@@ -21,8 +20,7 @@ board.addEventListener("click", (e) => {
       setDisable: setDisable,
     };
     label = "Add a task";
-    button = "Add";
-    openModal(label, button, actions);
+    openModal(label, actions);
     return;
   }
 
@@ -34,10 +32,8 @@ board.addEventListener("click", (e) => {
     modalInput.value = taskName;
     if (operation === "edit") {
       label = "Edit a task";
-      button = "Edit";
     } else if (operation === "delete") {
       label = "Are you sure you want to delete this task?";
-      button = "Delete";
       setDisable = true;
     }
     const actions = {
@@ -46,21 +42,21 @@ board.addEventListener("click", (e) => {
       type: "task",
       setDisable: setDisable,
     };
-    openModal(label, button, actions);
+    openModal(label, actions);
     return;
   }
 
   if (clearButton) {
     label = "Are you sure you want to clear all tasks?";
-    button = "Clear";
     const columnId = Number(clearButton.dataset.colId);
     const operation = clearButton.dataset.action;
     const actions = {
       id: columnId,
       operation: operation,
+      setHidden: true,
       type: "task",
     };
-    openModal(label, button, actions);
+    openModal(label, actions);
     return;
   }
 
@@ -71,10 +67,8 @@ board.addEventListener("click", (e) => {
     modalInput.value = columnName;
     if (operation === "edit") {
       label = "Edit Column Name";
-      button = "Edit";
     } else if (operation === "delete") {
       label = "Are you sure you want to delete this column?";
-      button = "Delete";
       setDisable = true;
     }
     const actions = {
@@ -83,7 +77,7 @@ board.addEventListener("click", (e) => {
       type: "column",
       setDisable: setDisable,
     };
-    openModal(label, button, actions);
+    openModal(label, actions);
     return;
   }
 });

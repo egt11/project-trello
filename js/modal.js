@@ -1,4 +1,14 @@
-import { addTask, editTask, deleteTask, clearTasks, addColumn, editColumn, deleteColumn } from "./crud_functions.js";
+import {
+  addTask,
+  editTask,
+  deleteTask,
+  clearTasks,
+  addColumn,
+  editColumn,
+  deleteColumn,
+  clearAllTasks,
+  deleteAllColumns,
+} from "./crud_functions.js";
 
 const modal = document.getElementById("modal");
 const modalLabel = document.getElementById("modalLabel");
@@ -11,15 +21,17 @@ btnCloseModal.addEventListener("click", () => {
   modal.close();
 });
 
-export function openModal(label, button, actions) {
-  if (actions.operation === "clear") modalInput.style.display = "none";
-  else modalInput.style.display = "block";
+export function openModal(label, actions) {
+  actions.setHidden
+    ? (modalInput.style.display = "none")
+    : (modalInput.style.display = "block");
 
   if (actions.setDisable && actions.operation === "delete")
     modalInput.disabled = true;
   else modalInput.disabled = false;
+
   modalLabel.textContent = label;
-  modalPrimaryButton.textContent = button;
+  modalPrimaryButton.textContent = "Confirm";
   modalPrimaryButton.dataset.action = actions.operation;
   modalPrimaryButton.dataset.id = actions.id;
   actions.type ? (modalPrimaryButton.dataset.type = actions.type) : null;
@@ -36,14 +48,17 @@ modalPrimaryButton.addEventListener("click", () => {
   const id = Number(modalPrimaryButton.dataset.id) || null;
   const type = modalPrimaryButton.dataset.type || null;
   let input = null;
-  if (operation !== "clear") input = modalInput.value.trim();
-  if (operation !== "clear" && !input) return;
+  if (!["clear", "deleteAll", "clearAll"].includes(operation)) {
+    input = modalInput.value.trim();
+    if (!input) return;
+  }
 
   //columns
   if (type === "column") {
     if (operation === "add") addColumn(input);
     else if (operation === "edit") editColumn(input, id);
     else if (operation === "delete") deleteColumn(id);
+    else if (operation === "deleteAll") deleteAllColumns();
   }
 
   //tasks
@@ -52,6 +67,7 @@ modalPrimaryButton.addEventListener("click", () => {
     else if (operation === "edit") editTask(input, id);
     else if (operation === "delete") deleteTask(id);
     else if (operation === "clear") clearTasks(id);
+    else if (operation === "clearAll") clearAllTasks();
   }
   modalInput.value = "";
   modal.close();

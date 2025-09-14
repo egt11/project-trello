@@ -1,12 +1,12 @@
 import {
   getColumns,
   getTasks,
-  setColumns,
   setTasks,
   starterColumns,
 } from "./data.js";
 import { openModal } from "./modal.js";
 import { addColumn } from "./crud_functions.js";
+import { toggleHeaderButtons } from "./header_buttons.js";
 
 export default function renderColumns() {
   const columns = getColumns();
@@ -14,6 +14,7 @@ export default function renderColumns() {
   board.innerHTML = "";
 
   if (columns.length < 1) {
+    toggleHeaderButtons();
     // --- EMPTY STATE UI ---
     const emptyStateDiv = document.createElement("div");
     emptyStateDiv.className =
@@ -47,9 +48,8 @@ export default function renderColumns() {
     btnAddColumnManually.textContent = "or, Add a Column Manually";
     btnAddColumnManually.addEventListener("click", () => {
       const label = "Add a New Column";
-      const button = "Add";
       const actions = { operation: "add", type: "column" };
-      openModal(label, button, actions);
+      openModal(label, actions);
     });
 
     buttonGroupDiv.appendChild(btnAddDefaultColumns);
@@ -61,6 +61,7 @@ export default function renderColumns() {
 
     board.appendChild(emptyStateDiv);
   } else {
+    toggleHeaderButtons();
     // --- RENDER EXISTING COLUMNS ---
     columns.forEach((column) => {
       const columnDiv = document.createElement("div");
@@ -132,7 +133,7 @@ export default function renderColumns() {
 
         const taskName = document.createElement("span");
         taskName.textContent = task.name;
-        taskName.className = "task-name break-words whitespace-normal";
+        taskName.className = "task-name break-words whitespace-normal min-w-0";
 
         const actionButtonsDiv = document.createElement("div");
         actionButtonsDiv.className = "flex justify-end gap-4";
@@ -191,9 +192,8 @@ export default function renderColumns() {
     btnAddColumn.textContent = "+ Add Column";
     btnAddColumn.addEventListener("click", () => {
       const label = "Add a New Column";
-      const button = "Add";
       const actions = { operation: "add", type: "column" };
-      openModal(label, button, actions);
+      openModal(label, actions);
     });
 
     board.appendChild(btnAddColumn);

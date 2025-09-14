@@ -1,7 +1,5 @@
 import { getColumns, setColumns, getTasks, setTasks } from "./data.js";
 
-const columns = getColumns();
-
 // tasks
 export function addTask(newTask, columnId) {
   const tasks = getTasks();
@@ -37,8 +35,13 @@ export function clearTasks(columnId) {
   setTasks(filteredTasks);
 }
 
+export function clearAllTasks() {
+  setTasks([]);
+}
+
 // columns functions
 export function addColumn(name) {
+  const columns = getColumns();
   let id = 0;
   columns.forEach((column) => {
     const storedId = column.id;
@@ -50,6 +53,7 @@ export function addColumn(name) {
 }
 
 export function editColumn(input, columnId) {
+  const columns = getColumns();
   const item = columns.find((column) => column.id === columnId);
   item.name = input;
   const index = columns.findIndex((column) => column.id === columnId);
@@ -58,10 +62,16 @@ export function editColumn(input, columnId) {
 }
 
 export function deleteColumn(columnId) {
+  const columns = getColumns();
   const tasks = getTasks();
   const filteredTasks = tasks.filter((task) => task.columnId !== columnId);
   const index = getColumns().findIndex((column) => column.id === columnId);
   columns.splice(index, 1);
   setColumns(columns);
   setTasks(filteredTasks);
+}
+
+export function deleteAllColumns() {
+  setTasks([]);
+  setColumns([]);
 }
